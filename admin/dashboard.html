@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Donivers - Administration">
+    <title>Donivers - Administration</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .admin-bar {
+            background-color: var(--color-dark-gray);
+            color: var(--color-white);
+            padding: 0.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .admin-bar span {
+            opacity: 0.7;
+        }
+
+        .btn-logout {
+            background: none;
+            border: 1px solid var(--color-light-gray);
+            color: var(--color-light-gray);
+            padding: 0.35rem 1rem;
+            cursor: pointer;
+            font-family: var(--font-primary);
+            font-size: 0.8rem;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-logout:hover {
+            background-color: var(--color-white);
+            color: var(--color-black);
+        }
+
+        .devlog-editor {
+            border: 2px solid var(--color-black);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .devlog-editor h3 {
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-lg);
+        }
+
+        .editor-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .editor-toolbar button {
+            background: var(--color-black);
+            color: var(--color-white);
+            border: none;
+            padding: 0.4rem 0.75rem;
+            cursor: pointer;
+            font-family: var(--font-primary);
+            font-size: 0.8rem;
+            transition: all var(--transition-fast);
+        }
+
+        .editor-toolbar button:hover {
+            background: var(--color-medium-gray);
+        }
+
+        .editor-area {
+            width: 100%;
+            min-height: 250px;
+            border: 2px solid var(--color-black);
+            padding: 1rem;
+            font-family: var(--font-primary);
+            font-size: var(--font-size-base);
+            line-height: 1.7;
+            resize: vertical;
+            outline: none;
+            overflow-y: auto;
+        }
+
+        .editor-area:focus {
+            background-color: #fafafa;
+        }
+
+        .editor-area img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 1rem 0;
+            border: 2px solid var(--color-light-gray);
+        }
+
+        .image-upload-zone {
+            border: 2px dashed var(--color-medium-gray);
+            padding: var(--spacing-md);
+            text-align: center;
+            margin-top: var(--spacing-sm);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            color: var(--color-medium-gray);
+        }
+
+        .image-upload-zone:hover {
+            border-color: var(--color-black);
+            color: var(--color-black);
+        }
+
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .image-preview img {
+            max-width: 150px;
+            max-height: 100px;
+            object-fit: cover;
+            border: 2px solid var(--color-black);
+        }
+
+        .article-list {
+            margin-top: var(--spacing-md);
+        }
+
+        .article-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid var(--color-light-gray);
+            margin-bottom: 0.5rem;
+            transition: all var(--transition-fast);
+        }
+
+        .article-list-item:hover {
+            background-color: var(--color-light-gray);
+        }
+
+        .article-list-item.unpublished {
+            opacity: 0.5;
+            border-style: dashed;
+        }
+
+        .article-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .article-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 0.3rem 0.75rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-family: var(--font-primary);
+            border: 1px solid var(--color-black);
+            background: var(--color-white);
+            color: var(--color-black);
+            transition: all var(--transition-fast);
+        }
+
+        .btn-small:hover {
+            background: var(--color-black);
+            color: var(--color-white);
+        }
+
+        .btn-small.delete {
+            border-color: #c0392b;
+            color: #c0392b;
+        }
+
+        .btn-small.delete:hover {
+            background: #c0392b;
+            color: var(--color-white);
+        }
+
+        .btn-small.publish {
+            border-color: #27ae60;
+            color: #27ae60;
+        }
+
+        .btn-small.publish:hover {
+            background: #27ae60;
+            color: var(--color-white);
+        }
+
+        .btn-small.unpublish {
+            border-color: #e67e22;
+            color: #e67e22;
+        }
+
+        .btn-small.unpublish:hover {
+            background: #e67e22;
+            color: var(--color-white);
+        }
+
+        .btn-small.arrow {
+            padding: 0.3rem 0.5rem;
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        .status-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .status-badge.published {
+            background: #27ae60;
+            color: white;
+        }
+
+        .status-badge.draft {
+            background: var(--color-medium-gray);
+            color: white;
+        }
+
+        .success-msg {
+            display: none;
+            color: #27ae60;
+            text-align: center;
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border: 1px solid #27ae60;
+            font-size: 0.9rem;
+        }
+
+        .section-subtitle {
+            font-size: 0.9rem;
+            color: var(--color-medium-gray);
+            margin-bottom: 1rem;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--color-black);
+        }
+
+        .admin-tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            font-family: var(--font-primary);
+            font-size: 1rem;
+            font-weight: 600;
+            border: 2px solid var(--color-black);
+            border-bottom: none;
+            background: var(--color-light-gray);
+            color: var(--color-medium-gray);
+            transition: all var(--transition-fast);
+            margin-right: -2px;
+        }
+
+        .admin-tab:hover {
+            background: var(--color-white);
+        }
+
+        .admin-tab.active {
+            background: var(--color-white);
+            color: var(--color-black);
+            position: relative;
+            z-index: 1;
+        }
+
+        .admin-panel {
+            display: none;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .service-form {
+            border: 2px solid var(--color-black);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .service-form h3 {
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-lg);
+        }
+
+        .service-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid var(--color-light-gray);
+            margin-bottom: 0.5rem;
+            transition: all var(--transition-fast);
+        }
+
+        .service-list-item:hover {
+            background-color: var(--color-light-gray);
+        }
+
+        .bullet-input-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .bullet-input-row input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--color-medium-gray);
+            font-family: var(--font-primary);
+            font-size: 0.9rem;
+        }
+
+        .bullet-input-row button {
+            padding: 0.4rem 0.6rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border: 1px solid var(--color-medium-gray);
+            background: white;
+            color: #c0392b;
+            transition: all var(--transition-fast);
+        }
+
+        .bullet-input-row button:hover {
+            background: #c0392b;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- AUTH CHECK -->
+    <script>
+        if (localStorage.getItem('donivers_admin') !== 'true') {
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <!-- ADMIN BAR -->
+    <div class="admin-bar">
+        <span>&#128274; Administration Donivers</span>
+        <button class="btn-logout" onclick="logout()">Déconnexion</button>
+    </div>
+
+    <!-- HEADER & NAVIGATION -->
+    <header class="header">
+        <nav class="nav-container">
+            <a href="../index.html" class="logo">DONIVERS</a>
+            <ul class="nav-menu">
+                <li><a href="../index.html">Accueil</a></li>
+                <li><a href="../services.html">Services</a></li>
+                <li><a href="../devlog.html">Devlog</a></li>
+                <li><a href="../contact.html">Contact</a></li>
+                <li><a href="login.html" title="Admin" style="font-size: 0.85em;">&#128274;</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section class="section">
+        <div class="container">
+            <h1 class="section-title">Administration</h1>
+
+            <!-- TABS -->
+            <div class="admin-tabs">
+                <button class="admin-tab active" onclick="switchTab('devlog')">Devlog</button>
+                <button class="admin-tab" onclick="switchTab('services')">Services</button>
+            </div>
+
+            <!-- ==================== DEVLOG PANEL ==================== -->
+            <div class="admin-panel active" id="panel-devlog">
+                <div class="devlog-editor" id="editor-section">
+                    <h3 id="editor-title">Nouvel Article</h3>
+
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label for="article-title">Titre de l'article</label>
+                        <input type="text" id="article-title"
+                            style="width: 100%; padding: 0.75rem; border: 2px solid var(--color-black); font-family: var(--font-primary); font-size: 1rem;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label for="article-category">Catégorie</label>
+                        <input type="text" id="article-category" placeholder="Ex: Développement, Réflexion, Annonce"
+                            style="width: 100%; padding: 0.75rem; border: 2px solid var(--color-black); font-family: var(--font-primary); font-size: 1rem;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label for="article-content">Contenu</label>
+                        <div class="editor-toolbar">
+                            <button onclick="formatText('bold')" title="Gras"><b>G</b></button>
+                            <button onclick="formatText('italic')" title="Italique"><i>I</i></button>
+                            <button onclick="formatText('underline')" title="Souligné"><u>S</u></button>
+                            <button onclick="formatText('insertUnorderedList')" title="Liste">• Liste</button>
+                            <button onclick="formatText('insertOrderedList')" title="Liste numérotée">1. Liste</button>
+                            <button onclick="document.getElementById('image-input').click();" title="Insérer une image"
+                                style="background: var(--color-medium-gray);">📷 Image</button>
+                        </div>
+                        <input type="file" id="image-input" accept="image/*" multiple style="display: none;"
+                            onchange="insertImagesAtCursor(event)">
+                        <div class="editor-area" id="article-content" contenteditable="true"></div>
+                        <p style="font-size: 0.8rem; color: var(--color-medium-gray); margin-top: 0.5rem;">💡 Placez
+                            votre
+                            curseur dans le texte, puis cliquez sur 📷 Image pour insérer une image à cet endroit.</p>
+                    </div>
+
+                    <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                        <button class="btn-outline btn" onclick="saveArticle()">Enregistrer</button>
+                        <button class="btn-small" onclick="cancelEdit()" id="cancel-btn"
+                            style="display: none;">Annuler</button>
+                    </div>
+
+                    <p class="success-msg" id="success-msg">Article enregistré avec succès !</p>
+                </div>
+
+                <!-- ARTICLES LIST -->
+                <h3 style="margin-top: 2rem; margin-bottom: 0.25rem;">Articles enregistrés</h3>
+                <p class="section-subtitle">Utilisez les flèches ▲ ▼ pour changer l'ordre d'affichage sur la page
+                    Devlog.
+                </p>
+                <div class="article-list" id="article-list">
+                    <p style="color: var(--color-medium-gray);">Aucun article pour le moment.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SERVICES PANEL ==================== -->
+        <div class="admin-panel" id="panel-services">
+            <div class="service-form" id="service-editor">
+                <h3 id="service-editor-title">Nouveau Service</h3>
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="service-title">Titre du service</label>
+                    <input type="text" id="service-title"
+                        style="width: 100%; padding: 0.75rem; border: 2px solid var(--color-black); font-family: var(--font-primary); font-size: 1rem;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="service-description">Description</label>
+                    <textarea id="service-description" rows="3"
+                        style="width: 100%; padding: 0.75rem; border: 2px solid var(--color-black); font-family: var(--font-primary); font-size: 1rem; resize: vertical;"></textarea>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label>Points clés <span
+                            style="font-size: 0.8rem; color: var(--color-medium-gray);">(optionnel)</span></label>
+                    <div id="service-bullets"></div>
+                    <button class="btn-small" onclick="addBulletField()" style="margin-top: 0.5rem;">+ Ajouter
+                        un point</button>
+                </div>
+
+                <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                    <button class="btn-outline btn" onclick="saveService()">Enregistrer</button>
+                    <button class="btn-small" onclick="cancelServiceEdit()" id="service-cancel-btn"
+                        style="display: none;">Annuler</button>
+                </div>
+
+                <p class="success-msg" id="service-success-msg">Service enregistré avec succès !</p>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 0.25rem;">Services enregistrés</h3>
+            <p class="section-subtitle">Utilisez les flèches ▲ ▼ pour réordonner les services. L'ordre affiché
+                ici est celui du site.</p>
+            <div class="article-list" id="service-list">
+                <p style="color: var(--color-medium-gray);">Aucun service pour le moment.</p>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Donivers. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- ARTICLES STORAGE ---
+        function getArticles() {
+            return JSON.parse(localStorage.getItem('donivers_articles') || '[]');
+        }
+
+        function saveArticles(articles) {
+            localStorage.setItem('donivers_articles', JSON.stringify(articles));
+        }
+
+        // --- FORMAT TEXT ---
+        function formatText(command) {
+            document.execCommand(command, false, null);
+            document.getElementById('article-content').focus();
+        }
+
+        // --- INSERT IMAGES AT CURSOR ---
+        var savedSelection = null;
+
+        // Save cursor position when leaving the editor
+        document.addEventListener('DOMContentLoaded', function () {
+            var editor = document.getElementById('article-content');
+            editor.addEventListener('blur', function () {
+                var sel = window.getSelection();
+                if (sel.rangeCount > 0) {
+                    var range = sel.getRangeAt(0);
+                    if (editor.contains(range.commonAncestorContainer)) {
+                        savedSelection = range.cloneRange();
+                    }
+                }
+            });
+        });
+
+        function insertImagesAtCursor(event) {
+            var files = event.target.files;
+            var editor = document.getElementById('article-content');
+
+            for (var i = 0; i < files.length; i++) {
+                (function (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        editor.focus();
+
+                        // Restore saved cursor position
+                        if (savedSelection) {
+                            var sel = window.getSelection();
+                            sel.removeAllRanges();
+                            sel.addRange(savedSelection);
+                        }
+
+                        // Insert image at cursor
+                        var img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.maxWidth = '100%';
+                        img.style.height = 'auto';
+                        img.style.display = 'block';
+                        img.style.margin = '1rem 0';
+
+                        var sel = window.getSelection();
+                        if (sel.rangeCount > 0) {
+                            var range = sel.getRangeAt(0);
+                            range.deleteContents();
+                            range.insertNode(img);
+
+                            // Move cursor after the image
+                            range.setStartAfter(img);
+                            range.setEndAfter(img);
+                            sel.removeAllRanges();
+                            sel.addRange(range);
+                            savedSelection = range.cloneRange();
+                        } else {
+                            editor.appendChild(img);
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                })(files[i]);
+            }
+
+            // Reset input so same file can be selected again
+            event.target.value = '';
+        }
+
+        // --- SAVE ARTICLE ---
+        var editingIndex = -1;
+
+        function saveArticle() {
+            var title = document.getElementById('article-title').value.trim();
+            var category = document.getElementById('article-category').value.trim();
+            var content = document.getElementById('article-content').innerHTML.trim();
+
+            if (!title || !content) {
+                alert('Veuillez remplir le titre et le contenu.');
+                return;
+            }
+
+            var articles = getArticles();
+            var now = new Date();
+            var dateStr = now.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+            var article = {
+                title: title,
+                category: category || 'Général',
+                content: content,
+                date: dateStr,
+                timestamp: now.getTime(),
+                published: false
+            };
+
+            if (editingIndex >= 0) {
+                // Preserve published state when editing
+                article.published = articles[editingIndex].published;
+                articles[editingIndex] = article;
+                editingIndex = -1;
+            } else {
+                articles.unshift(article);
+            }
+
+            saveArticles(articles);
+
+            // Reset form
+            document.getElementById('article-title').value = '';
+            document.getElementById('article-category').value = '';
+            document.getElementById('article-content').innerHTML = '';
+            document.getElementById('cancel-btn').style.display = 'none';
+            savedSelection = null;
+            document.getElementById('editor-title').textContent = 'Nouvel Article';
+
+            // Show success
+            var msg = document.getElementById('success-msg');
+            msg.style.display = 'block';
+            setTimeout(function () { msg.style.display = 'none'; }, 3000);
+
+            renderArticles();
+        }
+
+        // --- EDIT ARTICLE ---
+        function editArticle(index) {
+            var articles = getArticles();
+            var article = articles[index];
+            editingIndex = index;
+
+            document.getElementById('article-title').value = article.title;
+            document.getElementById('article-category').value = article.category;
+            document.getElementById('article-content').innerHTML = article.content;
+            document.getElementById('editor-title').textContent = 'Modifier l\'article';
+            document.getElementById('cancel-btn').style.display = 'inline-block';
+
+            savedSelection = null;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- CANCEL EDIT ---
+        function cancelEdit() {
+            editingIndex = -1;
+            document.getElementById('article-title').value = '';
+            document.getElementById('article-category').value = '';
+            document.getElementById('article-content').innerHTML = '';
+            savedSelection = null;
+            document.getElementById('cancel-btn').style.display = 'none';
+            document.getElementById('editor-title').textContent = 'Nouvel Article';
+        }
+
+        // --- DELETE ARTICLE ---
+        function deleteArticle(index) {
+            if (!confirm('Supprimer définitivement cet article ?')) return;
+            var articles = getArticles();
+            articles.splice(index, 1);
+            saveArticles(articles);
+            renderArticles();
+        }
+
+        // --- PUBLISH / UNPUBLISH ---
+        function togglePublish(index) {
+            var articles = getArticles();
+            articles[index].published = !articles[index].published;
+            saveArticles(articles);
+            renderArticles();
+        }
+
+        // --- MOVE ARTICLE UP/DOWN ---
+        function moveArticle(index, direction) {
+            var articles = getArticles();
+            var newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= articles.length) return;
+
+            // Swap
+            var temp = articles[index];
+            articles[index] = articles[newIndex];
+            articles[newIndex] = temp;
+
+            saveArticles(articles);
+            renderArticles();
+        }
+
+        // --- RENDER ARTICLES ---
+        function renderArticles() {
+            var articles = getArticles();
+            var list = document.getElementById('article-list');
+
+            if (articles.length === 0) {
+                list.innerHTML = '<p style="color: var(--color-medium-gray);">Aucun article pour le moment.</p>';
+                return;
+            }
+
+            var html = '';
+            articles.forEach(function (article, index) {
+                var isPublished = article.published === true;
+                var itemClass = 'article-list-item' + (isPublished ? '' : ' unpublished');
+
+                html += '<div class="' + itemClass + '">';
+
+                // Ordering arrows
+                html += '<div style="display: flex; flex-direction: column; gap: 0.25rem; margin-right: 1rem;">';
+                if (index > 0) {
+                    html += '<button class="btn-small arrow" onclick="moveArticle(' + index + ', -1)" title="Monter">▲</button>';
+                } else {
+                    html += '<button class="btn-small arrow" disabled style="opacity:0.2;">▲</button>';
+                }
+                if (index < articles.length - 1) {
+                    html += '<button class="btn-small arrow" onclick="moveArticle(' + index + ', 1)" title="Descendre">▼</button>';
+                } else {
+                    html += '<button class="btn-small arrow" disabled style="opacity:0.2;">▼</button>';
+                }
+                html += '</div>';
+
+                // Article info
+                html += '<div class="article-info">';
+                html += '<strong>' + article.title + '</strong>';
+                if (isPublished) {
+                    html += '<span class="status-badge published">Publié</span>';
+                } else {
+                    html += '<span class="status-badge draft">Brouillon</span>';
+                }
+                html += '<br><span style="font-size: 0.8rem; color: var(--color-medium-gray);">' + article.date + ' — ' + article.category + '</span>';
+                html += '</div>';
+
+                // Actions
+                html += '<div class="article-actions">';
+                if (isPublished) {
+                    html += '<button class="btn-small unpublish" onclick="togglePublish(' + index + ')" title="Retirer du Devlog">Retirer</button>';
+                } else {
+                    html += '<button class="btn-small publish" onclick="togglePublish(' + index + ')" title="Publier sur le Devlog">Publier</button>';
+                }
+                html += '<button class="btn-small" onclick="editArticle(' + index + ')">Modifier</button>';
+                html += '<button class="btn-small delete" onclick="deleteArticle(' + index + ')">Supprimer</button>';
+                html += '</div>';
+
+                html += '</div>';
+            });
+
+            list.innerHTML = html;
+        }
+
+        // --- LOGOUT ---
+        function logout() {
+            localStorage.removeItem('donivers_admin');
+            window.location.href = 'login.html';
+        }
+
+        // Init
+        renderArticles();
+
+        // ==========================================
+        // ============== SERVICES ==================
+        // ==========================================
+
+        // --- TAB SWITCHING ---
+        function switchTab(tab) {
+            document.querySelectorAll('.admin-tab').forEach(function (t) { t.classList.remove('active'); });
+            document.querySelectorAll('.admin-panel').forEach(function (p) { p.classList.remove('active'); });
+
+            if (tab === 'devlog') {
+                document.querySelector('.admin-tab:nth-child(1)').classList.add('active');
+                document.getElementById('panel-devlog').classList.add('active');
+            } else {
+                document.querySelector('.admin-tab:nth-child(2)').classList.add('active');
+                document.getElementById('panel-services').classList.add('active');
+            }
+        }
+
+        // --- SERVICES STORAGE ---
+        function getServices() {
+            return JSON.parse(localStorage.getItem('donivers_services') || '[]');
+        }
+
+        function saveServicesToStorage(services) {
+            localStorage.setItem('donivers_services', JSON.stringify(services));
+        }
+
+        // --- BULLET FIELDS ---
+        function addBulletField(value) {
+            var container = document.getElementById('service-bullets');
+            var row = document.createElement('div');
+            row.className = 'bullet-input-row';
+            row.innerHTML = '<input type="text" placeholder="Ex: Conception UI/UX" value="' + (value || '') + '">' +
+                '<button onclick="this.parentElement.remove()" title="Supprimer">&times;</button>';
+            container.appendChild(row);
+        }
+
+        // --- SAVE SERVICE ---
+        var editingServiceIndex = -1;
+
+        function saveService() {
+            var title = document.getElementById('service-title').value.trim();
+            var description = document.getElementById('service-description').value.trim();
+
+            if (!title) {
+                alert('Veuillez remplir le titre du service.');
+                return;
+            }
+
+            // Collect bullets
+            var bullets = [];
+            document.querySelectorAll('#service-bullets .bullet-input-row input').forEach(function (input) {
+                var val = input.value.trim();
+                if (val) bullets.push(val);
+            });
+
+            var services = getServices();
+
+            var service = {
+                title: title,
+                description: description,
+                bullets: bullets
+            };
+
+            if (editingServiceIndex >= 0) {
+                services[editingServiceIndex] = service;
+                editingServiceIndex = -1;
+            } else {
+                services.push(service);
+            }
+
+            saveServicesToStorage(services);
+
+            // Reset form
+            document.getElementById('service-title').value = '';
+            document.getElementById('service-description').value = '';
+            document.getElementById('service-bullets').innerHTML = '';
+            document.getElementById('service-cancel-btn').style.display = 'none';
+            document.getElementById('service-editor-title').textContent = 'Nouveau Service';
+
+            // Show success
+            var msg = document.getElementById('service-success-msg');
+            msg.style.display = 'block';
+            setTimeout(function () { msg.style.display = 'none'; }, 3000);
+
+            renderServices();
+        }
+
+        // --- EDIT SERVICE ---
+        function editService(index) {
+            var services = getServices();
+            var service = services[index];
+            editingServiceIndex = index;
+
+            document.getElementById('service-title').value = service.title;
+            document.getElementById('service-description').value = service.description || '';
+            document.getElementById('service-editor-title').textContent = 'Modifier le service';
+            document.getElementById('service-cancel-btn').style.display = 'inline-block';
+
+            // Restore bullets
+            document.getElementById('service-bullets').innerHTML = '';
+            if (service.bullets) {
+                service.bullets.forEach(function (b) { addBulletField(b); });
+            }
+
+            document.getElementById('panel-services').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- CANCEL SERVICE EDIT ---
+        function cancelServiceEdit() {
+            editingServiceIndex = -1;
+            document.getElementById('service-title').value = '';
+            document.getElementById('service-description').value = '';
+            document.getElementById('service-bullets').innerHTML = '';
+            document.getElementById('service-cancel-btn').style.display = 'none';
+            document.getElementById('service-editor-title').textContent = 'Nouveau Service';
+        }
+
+        // --- DELETE SERVICE ---
+        function deleteService(index) {
+            if (!confirm('Supprimer ce service ?')) return;
+            var services = getServices();
+            services.splice(index, 1);
+            saveServicesToStorage(services);
+            renderServices();
+        }
+
+        // --- MOVE SERVICE ---
+        function moveService(index, direction) {
+            var services = getServices();
+            var newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= services.length) return;
+            var temp = services[index];
+            services[index] = services[newIndex];
+            services[newIndex] = temp;
+            saveServicesToStorage(services);
+            renderServices();
+        }
+
+        // --- RENDER SERVICES ---
+        function renderServices() {
+            var services = getServices();
+            var list = document.getElementById('service-list');
+
+            if (services.length === 0) {
+                list.innerHTML = '<p style="color: var(--color-medium-gray);">Aucun service pour le moment.</p>';
+                return;
+            }
+
+            var html = '';
+            services.forEach(function (service, index) {
+                html += '<div class="service-list-item">';
+
+                // Ordering arrows
+                html += '<div style="display: flex; flex-direction: column; gap: 0.25rem; margin-right: 1rem;">';
+                if (index > 0) {
+                    html += '<button class="btn-small arrow" onclick="moveService(' + index + ', -1)" title="Monter">▲</button>';
+                } else {
+                    html += '<button class="btn-small arrow" disabled style="opacity:0.2;">▲</button>';
+                }
+                if (index < services.length - 1) {
+                    html += '<button class="btn-small arrow" onclick="moveService(' + index + ', 1)" title="Descendre">▼</button>';
+                } else {
+                    html += '<button class="btn-small arrow" disabled style="opacity:0.2;">▼</button>';
+                }
+                html += '</div>';
+
+                // Service info
+                html += '<div class="article-info">';
+                html += '<strong>' + (index + 1 < 10 ? '0' : '') + (index + 1) + ' — ' + service.title + '</strong>';
+                if (service.description) {
+                    html += '<br><span style="font-size: 0.8rem; color: var(--color-medium-gray);">' + service.description + '</span>';
+                }
+                if (service.bullets && service.bullets.length > 0) {
+                    html += '<br><span style="font-size: 0.75rem; color: var(--color-medium-gray);">' + service.bullets.join(' • ') + '</span>';
+                }
+                html += '</div>';
+
+                // Actions
+                html += '<div class="article-actions">';
+                html += '<button class="btn-small" onclick="editService(' + index + ')">Modifier</button>';
+                html += '<button class="btn-small delete" onclick="deleteService(' + index + ')">Supprimer</button>';
+                html += '</div>';
+
+                html += '</div>';
+            });
+
+            list.innerHTML = html;
+        }
+
+        // Init services
+        renderServices();
+    </script>
+</body>
+
+</html>

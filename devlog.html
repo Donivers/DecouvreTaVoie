@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Donivers - Devlog et actualités">
+    <title>Donivers - Devlog</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .devlog-full-content {
+            display: none;
+            margin-top: 1rem;
+            line-height: 1.8;
+        }
+
+        .devlog-full-content.open {
+            display: block;
+        }
+
+        .devlog-full-content img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 1rem 0;
+            border: 2px solid var(--color-light-gray);
+        }
+
+        .no-articles {
+            text-align: center;
+            color: var(--color-medium-gray);
+            padding: 3rem 0;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER & NAVIGATION -->
+    <header class="header">
+        <nav class="nav-container">
+            <a href="index.html" class="logo">DONIVERS</a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="devlog.html" class="active">Devlog</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="admin/login.html" title="Admin" style="font-size: 0.85em;">&#128274;</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- DEVLOG SECTION -->
+    <section class="section">
+        <div class="container">
+            <h1 class="section-title">Devlog</h1>
+            <p style="font-size: 1.25rem; color: var(--color-medium-gray); margin-bottom: 3rem;">
+                Suivez l'évolution de mes projets, découvrez mes réflexions et plongez dans les coulisses de la
+                création.
+            </p>
+
+            <div class="devlog-container" id="devlog-container">
+                <!-- Articles are loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Donivers. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        function loadDevlog() {
+            var articles = JSON.parse(localStorage.getItem('donivers_articles') || '[]');
+            var container = document.getElementById('devlog-container');
+
+            // Filter only published articles (keep the order from the array)
+            var published = articles.filter(function (a) { return a.published === true; });
+
+            if (published.length === 0) {
+                container.innerHTML = '<p class="no-articles">Aucun article publié pour le moment. Revenez bientôt !</p>';
+                return;
+            }
+
+            var html = '';
+            published.forEach(function (article, i) {
+                // Create excerpt: strip HTML tags and take first 200 chars
+                var tempDiv = document.createElement('div');
+                tempDiv.innerHTML = article.content;
+                var plainText = tempDiv.textContent || tempDiv.innerText || '';
+                var excerpt = plainText.substring(0, 200);
+                if (plainText.length > 200) excerpt += '...';
+
+                html += '<article class="devlog-article">';
+                html += '<div class="devlog-meta">';
+                html += '<span class="devlog-date">' + article.date + '</span>';
+                html += '<span class="devlog-category">' + article.category + '</span>';
+                html += '</div>';
+                html += '<h2 class="devlog-title">' + article.title + '</h2>';
+                html += '<p class="devlog-excerpt">' + excerpt + '</p>';
+
+                // Full content (hidden by default)
+                html += '<div class="devlog-full-content" id="article-full-' + i + '">';
+                html += article.content;
+
+                // Images
+                if (article.images && article.images.length > 0) {
+                    html += '<div class="devlog-images">';
+                    article.images.forEach(function (src) {
+                        html += '<img src="' + src + '" alt="Image article">';
+                    });
+                    html += '</div>';
+                }
+                html += '</div>';
+
+                html += '<a href="javascript:void(0)" class="devlog-link" onclick="toggleArticle(' + i + ', this)">Lire la suite →</a>';
+                html += '</article>';
+            });
+
+            container.innerHTML = html;
+        }
+
+        function toggleArticle(index, link) {
+            var content = document.getElementById('article-full-' + index);
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                link.textContent = 'Lire la suite →';
+            } else {
+                content.classList.add('open');
+                link.textContent = '← Réduire';
+            }
+        }
+
+        // Load on page load
+        loadDevlog();
+    </script>
+</body>
+
+</html>

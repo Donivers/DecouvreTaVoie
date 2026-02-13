@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Donivers - Nos Services">
+    <title>Donivers - Services</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- HEADER & NAVIGATION -->
+    <header class="header">
+        <nav class="nav-container">
+            <a href="index.html" class="logo">DONIVERS</a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="services.html" class="active">Services</a></li>
+                <li><a href="devlog.html">Devlog</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="admin/login.html" title="Admin" style="font-size: 0.85em;">&#128274;</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- SERVICES SECTION -->
+    <section class="section">
+        <div class="container">
+            <h1 class="section-title">Nos Services</h1>
+
+            <div class="services-grid" id="services-grid">
+                <!-- Services loaded dynamically -->
+            </div>
+
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="contact.html" class="btn-outline btn">Nous Contacter</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Donivers. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        function loadServices() {
+            var services = JSON.parse(localStorage.getItem('donivers_services') || '[]');
+            var grid = document.getElementById('services-grid');
+
+            if (services.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: var(--color-medium-gray); padding: 2rem;">Les services seront bientôt disponibles.</p>';
+                return;
+            }
+
+            var html = '';
+            services.forEach(function (service, index) {
+                var num = (index + 1 < 10 ? '0' : '') + (index + 1);
+                html += '<div class="service-card">';
+                html += '<div class="service-number">' + num + '</div>';
+                html += '<h3>' + service.title + '</h3>';
+                if (service.description) {
+                    html += '<p>' + service.description + '</p>';
+                }
+                if (service.bullets && service.bullets.length > 0) {
+                    html += '<ul>';
+                    service.bullets.forEach(function (b) {
+                        html += '<li>' + b + '</li>';
+                    });
+                    html += '</ul>';
+                }
+                html += '</div>';
+            });
+
+            grid.innerHTML = html;
+        }
+
+        loadServices();
+    </script>
+</body>
+
+</html>
